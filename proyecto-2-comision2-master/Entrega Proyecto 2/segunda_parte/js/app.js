@@ -262,6 +262,16 @@ function renderizar(){
 	if(renderMode == 'RENDERMODE_COOK_TORRANCE')setShaderCookTorrance();
 	if(renderMode == 'RENDERMODE_WARD')setShaderWard();
 	cargarObjetos();
+	
+	/*
+	//cargo material del alien que es el primero que hay para seleccionar en la gui
+	document.getElementById('sliderf0').value=alien.getMaterial().get_f0;
+	document.getElementById('sliderm').value=alien.getMaterial().get_m;
+	document.getElementById('sliderax').value=alien.getMaterial().get_alpha_x;
+	document.getElementById('slideray').value=alien.getMaterial().get_alpha_y;
+	document.getElementById('slidersigma').value=getMaterial().get_sigma;
+	*/
+	
 	renderloopid = requestAnimationFrame(onRender);
 
 }
