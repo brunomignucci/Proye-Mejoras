@@ -270,11 +270,7 @@ function onRender(now) {
 	const timeDelta = now - lastDrawTime;    // tiempo entre este frame y el anterior
 
 	//actualizo posiciones y direcciones, ya que las lamparas y luces estan conectadas
-	if(luzEnCamara == 'NAVE'){
-		
-		cam.setObjetivo(platoVolador);
-		cam.setRadius(0);
-	}
+	
 	
 	if(renderMode == 'RENDERMODE_COOK_TORRANCE')renderWithCookTorrance();
 	if(renderMode == 'RENDERMODE_WARD')renderWithWard();

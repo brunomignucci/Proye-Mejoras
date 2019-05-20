@@ -156,21 +156,20 @@ function reset(){//reseteo los botones y la escena
     
     luz4.set_light_intensity(luz_dia); 
 
-	
-	
 	sel = alien;
 	selLight= luz1;
 
+   	//Posicion de alien y plato
 	alien.setTrans([0.0,0.0,0.0]);
 	platoVolador.setTrans([0.0,15.0,0.0]);
+	
+	//Posiciones predefinidas de las luces
 	luz1.set_light_pos(platoVolador.getTrans(),1.0);
-	
 	luz2.set_light_pos(platoVolador.getTrans(),1.0);
-	
 	luz3.set_light_pos(platoVolador.getTrans(),1.0);
 	
 
-
+    //Valores por defecto de los slides
 	document.getElementById('btnCamPhi').value = document.getElementById('btnCamPhi').defaultValue;
 	document.getElementById('btnCamTheta').value = document.getElementById('btnCamTheta').defaultValue;
 	document.getElementById('btnCamRadius').value = document.getElementById('btnCamRadius').defaultValue;
@@ -440,6 +439,25 @@ function focoCentro(){
 
 function selectLuzEnCam(){
 	luzEnCamara = document.getElementById('selectobj2').value;
+	if(document.getElementById('selectobj2').value=='NO'){
+		cam.setRadius(20);
+		cam.setObjetivo(alien);
+		cam.setTheta(45);
+		cam.setPhi(45);
+		document.getElementById('btnCamTheta').value=45;
+		document.getElementById('btnCamRadius').value=20;
+		document.getElementById('btnCamPhi').value=45;
+		document.getElementById('amountTheta').value=45;
+		document.getElementById('amountPhi').value=45;
+		document.getElementById('amountRadius').value=20;
+		document.getElementById('btnCamRadius').disabled=false;
+
+	}
+	else{
+		cam.setObjetivo(platoVolador);
+		cam.setRadius(0);
+		document.getElementById('btnCamRadius').disabled=true;
+	}
 }
 
 //0 Alien
