@@ -314,9 +314,6 @@ function renderWithCookTorrance(){
 	//limpio el canvas
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-	//dibujo el plano
-	drawWithCookTorrance(plano);
-
 	//dibujo las luces, acomodo sus posiciones y direcciones de acuerdo a las lamparas
 	luz1.set_light_pos([platoVolador.getTransX(),platoVolador.getTransY(),platoVolador.getTransZ(),1.0]); //para controlar la luz
 	let new_spot_direction1 = vec4.create();
@@ -338,6 +335,9 @@ function renderWithCookTorrance(){
 
 	luz4.set_light_pos([-0.3,-1.0,0.0,0.0]);
 
+	//dibujo el plano
+	drawWithCookTorrance(plano);
+
 
 	
 	// //dibujo alien
@@ -354,7 +354,7 @@ function renderWithCookTorrance(){
 	// drawWithCookTorrance(tractor);
 	// //dibujo silo
 	// drawWithCookTorrance(silo);
-	// drawWithCookTorrance(granero);
+	//drawWithCookTorrance(granero);
 
 
 }
@@ -772,9 +772,9 @@ function handleLoadedTexture(texture){
 	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
 	texture.image);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+	//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 	gl.bindTexture(gl.TEXTURE_2D, null);
 }
