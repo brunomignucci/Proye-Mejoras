@@ -208,11 +208,13 @@ class ObjetoGrafico{
         this.parsedOBJ = OBJParser.parseFile(OBJsrc);
         let indices = this.parsedOBJ.indices;
         let positions = this.parsedOBJ.positions;
-        let normales = this.parsedOBJ.normals;	
+        let normales = this.parsedOBJ.normals;
+        let texturas = this.parsedOBJ.textures;
         //creo los vao
         let vertexAttributeInfoArray = [
             new VertexAttributeInfo(positions, posLocation, 3),
-            new VertexAttributeInfo(normales, normLocation, 3)
+            new VertexAttributeInfo(normales, normLocation, 3),
+            new VertexAttributeInfo(texturas,texLocation, 2)
         ];
         this.vao = VAOHelper.create(indices, vertexAttributeInfoArray);
     }

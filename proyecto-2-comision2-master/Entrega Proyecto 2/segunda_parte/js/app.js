@@ -1,5 +1,6 @@
 var esferas = [];
 var renderloopid;
+var miTextura;
 
 var luz1 = new Luz(); //luz roja nave
 
@@ -46,6 +47,10 @@ var u_modelViewMatrix;
 var u_modelViewProjectionMatrix
 var	u_normalMatrix;
 
+//uniform de texturas
+var u_sampler;
+
+
 //Uniform de materiales
 var	u_k_ambient;
 var	u_k_diffuse;
@@ -86,6 +91,7 @@ var u_light_attenuation_b4;
 
 var posLocation;
 var normLocation;
+var texLocation;
 
 var cam = new Camera(); //vamos a controlar la camara desde esta clase
 cam.setRadius(20);
@@ -239,6 +245,7 @@ function onLoad() {
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	//para que los fragmentos no visibles no tapen a los visibles
 	gl.enable(gl.DEPTH_TEST);
+	initTexture();
 
 	//el boton de renderizar se habilita una vez que estemos listos para renderizar
 	let boton_renderizar = document.getElementById('btnrenderizar');
@@ -331,22 +338,23 @@ function renderWithCookTorrance(){
 
 	luz4.set_light_pos([-0.3,-1.0,0.0,0.0]);
 
-	
-	//dibujo alien
-	drawWithCookTorrance(alien);
 
-	//dibujo plato
-	drawWithCookTorrance(platoVolador);
-	//dibujo arboles
-	drawWithCookTorrance(arboles);
-	drawWithCookTorrance(arboles2);
-	drawWithCookTorrance(arboles3);
-	drawWithCookTorrance(arboles4);
-	//dibujo tractor
-	drawWithCookTorrance(tractor);
-	//dibujo silo
-	drawWithCookTorrance(silo);
-	drawWithCookTorrance(granero);
+	
+	// //dibujo alien
+	// drawWithCookTorrance(alien);
+
+	// //dibujo plato
+	// drawWithCookTorrance(platoVolador);
+	// //dibujo arboles
+	// drawWithCookTorrance(arboles);
+	// drawWithCookTorrance(arboles2);
+	// drawWithCookTorrance(arboles3);
+	// drawWithCookTorrance(arboles4);
+	// //dibujo tractor
+	// drawWithCookTorrance(tractor);
+	// //dibujo silo
+	// drawWithCookTorrance(silo);
+	// drawWithCookTorrance(granero);
 
 
 }
@@ -395,171 +403,6 @@ function renderWithWard(){
 
 }
 
-//reordena los indices de un obj para poder ser dibujado en forma de wireframes
-function reordenarIndices(srcIndices){
-	let i = 0;
-	let dstIndices = [];
-		while(i<srcIndices.length){
-			dstIndices.push(srcIndices[i]);
-			dstIndices.push(srcIndices[i+1]);
-			dstIndices.push(srcIndices[i+1]);
-			dstIndices.push(srcIndices[i+2]);
-			dstIndices.push(srcIndices[i+2]);
-			dstIndices.push(srcIndices[i]);
-			i = i+3;
-		}	
-	return dstIndices;
-}
-
-/*
-	rota el objeto 1 sobre su propio eje
-*/
-/**function rotarObj(){
-	if(document.getElementById('selectobj0').value=='Lampara1'){
-
-		let eje = document.getElementById('selectobj1').value;
-		
-		if (eje=="No")
-		{
-			//si se selecciona "no" entonces limpio el timer
-			clearInterval(timerRotarSobresuEje); 
-			return;
-		}
-		{
-			clearInterval(timerRotarSobresuEje); // limpio por cualquier movimiento anterior
-			
-			let delta = DeltaRot;
-			let start = Date.now();
-			timerRotarSobresuEje = setInterval(function() {
-			
-			let timePassed = Date.now() - start;
-			if (timePassed >= 20000) {
-				clearInterval(timerRotarSobresuEje); // termino a los 20 segundos
-				document.getElementById('selectobj1').value="No";
-				return;
-			}
-			if (eje=="Y")
-			{
-				lampara1.sumarAngleY(delta);
-			}
-				else if (eje=="X")
-					lampara1.sumarAngleX(delta);
-						else if (eje=="Z")
-							lampara1.sumarAngleZ(delta);
-								else if (eje=="XY")
-								{
-									lampara1.sumarAngleX(delta);
-									lampara1.sumarAngleY(delta);
-								}												
-			
-			}, 10);
-		}
-	}
-	
-	if(document.getElementById('selectobj0').value=='Lampara2'){
-		let eje = document.getElementById('selectobj1').value;
-	
-		if (eje=="No")
-		{
-			//si se selecciona "no" entonces limpio el timer
-			clearInterval(timerRotarSobresuEje); // limpio
-			return;
-		}
-		{
-			clearInterval(timerRotarSobresuEje); // limpio por cualquier movimiento anterior
-			
-			let delta = -DeltaRot;
-			let start = Date.now();
-			timerRotarSobresuEje = setInterval(function() {
-			
-			let timePassed = Date.now() - start;
-			if (timePassed >= 20000) {
-				clearInterval(timerRotarSobresuEje); // termino a los 20 segundos
-				document.getElementById('selectobj1').value="No";
-				return;
-			}
-			if (eje=="Y")
-				lampara2.sumarAngleY(delta);
-				else if (eje=="X")
-					lampara2.sumarAngleX(delta);
-						else if (eje=="Z")
-							lampara2.sumarAngleZ(delta);
-								else if (eje=="XY")
-								{
-									lampara2.sumarAngleX(delta);
-									lampara2.sumarAngleY(delta);
-								}
-			
-			}, 10);
-		}
-	}
-	
-}
-
-function rotarAlrededorPunto(objeto,punto,angulo) {		
-		objeto.rotarRespectoA(punto,angulo);		
-	
-	}
-
-function rotacionResp(punto)
-{
-	let obj1 = sel;
-	let obj2;
-	let delta;
-	if(obj1==lampara1){
-		obj2 = lampara2;
-		delta = -3;
-	}
-	if(obj1==lampara2){
-		obj2 = lampara1;
-		delta = 3;
-	}	
-	let eje;
-	if(punto == null){
-		//si no se pasa ningun punto por parametro, se rota respecto al otro objeto, 
-		//por lo tanto se toma el eje seleccionado en el select 4
-		eje = document.getElementById('selectobj4').value;	
-		document.getElementById('selectobj3').value="No"; //reestablezco la opcion en la otra rotacion 
-	}else{
-		//si se pasa un punto por parametro, se rota respecto al punto, por lo tanto
-		//se toma el eje seleccionado en el select 3
-		eje = document.getElementById('selectobj3').value;
-		document.getElementById('selectobj4').value="No";
-	}
-		if (eje=="No")
-		{
-			//si se selecciona "no" entonces limpio el timer
-			clearInterval(timerRotacionRespecto); 
-			return;
-		}
-		{
-			clearInterval(timerRotacionRespecto); // limpio por cualquier movimiento anterior		
-			let start = Date.now();
-			timerRotacionRespecto = setInterval(function() {			
-			let timePassed = Date.now() - start;
-			if (timePassed >= 20000) {
-				clearInterval(timerRotacionRespecto); // termino a los 20 segundos
-				document.getElementById('selectobj3').value="No";
-				document.getElementById('selectobj4').value="No";
-				return;
-			}
-		if(punto == null){
-			punto = obj2.getTrans();
-		}
-		if(eje=="X"){
-			rotarAlrededorPunto(obj1,punto,[delta,0,0]);
-		}
-		if(eje=="Y"){
-			rotarAlrededorPunto(obj1,punto,[0,delta,0]);
-		}
-		if(eje=="Z"){
-			rotarAlrededorPunto(obj1,punto,[0,0,delta]);
-		}
-			}, 20);
-		}
-}
-*/
-
 function limpiar_timers()
 {
 	clearInterval(timerOnClick);
@@ -596,10 +439,6 @@ function habilitarBotones()
 	document.getElementById('selectobj1').disabled=false;
 	document.getElementById('selectobj2').disabled=false;
 	document.getElementById('selectobj3').disabled=false;
-
-	///document.getElementById('rangeA').disabled=false;
-	//document.getElementById('rangeD').disabled=false;
-	//document.getElementById('rangeS').disabled=false;
 	
 	document.getElementById('sliderf0').disabled=false;
 	document.getElementById('sliderm').disabled=false;
@@ -653,7 +492,9 @@ function drawWithCookTorrance(objeto){//dibujamos el objeto con el shader de coo
         gl.uniform3fv(u_k_diffuse, objeto.material.get_k_diffuse());
         gl.uniform3fv(u_k_spec, objeto.material.get_k_spec());
         gl.uniform1f(u_f0,objeto.material.get_f0());
-        gl.uniform1f(u_m,objeto.material.get_m());
+		gl.uniform1f(u_m,objeto.material.get_m());
+		
+		
 
 	
         //luces
@@ -711,6 +552,11 @@ function drawWithCookTorrance(objeto){//dibujamos el objeto con el shader de coo
 		gl.uniform1f(u_spot_angle4, luz4.get_spot_angle());
 		gl.uniform1f(u_light_attenuation_a4, luz4.get_attenuation_a());
 		gl.uniform1f(u_light_attenuation_b4, luz4.get_attenuation_b());
+
+		//texturas
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, miTextura);
+		gl.uniform1i(shaderProgram.samplerUniform, 0);
 
         //elijo el vao a usar y llamo a draw elements
         gl.bindVertexArray(objeto.getVao());
@@ -815,12 +661,16 @@ function setShaderCookTorrance(){
 
 	posLocation = gl.getAttribLocation(shaderProgram, 'vertexPosition');
 	normLocation = gl.getAttribLocation(shaderProgram, 'vertexNormal');
+	texLocation = gl.getAttribLocation(shaderProgram,'vertexTextureCoordinates');
+
 
 	u_modelViewMatrix = gl.getUniformLocation(shaderProgram, 'modelViewMatrix');
 	u_modelMatrix = gl.getUniformLocation(shaderProgram, 'modelMatrix');
 	u_viewMatrix = gl.getUniformLocation(shaderProgram, 'viewMatrix');
 	u_projectionMatrix = gl.getUniformLocation(shaderProgram, 'projectionMatrix');
 	u_normalMatrix = gl.getUniformLocation(shaderProgram, 'normalMatrix');
+
+	u_sampler = gl.getUniformLocation(shaderProgram, 'imagen');
 
 	u_k_ambient = gl.getUniformLocation(shaderProgram, 'material.k_ambient');
 	u_k_diffuse = gl.getUniformLocation(shaderProgram, 'material.k_diffuse');
@@ -906,4 +756,25 @@ function changeRender(){
 	cancelAnimationFrame(renderloopid);
 
 	renderizar();
+}
+
+function initTexture(){
+	miTextura = gl.createTexture();
+	miTextura.image = new Image();
+	miTextura.image.onload = function (){
+		handleLoadedTexture(miTextura);
+	}
+	miTextura.image.src = "imagenes/piso.jpeg";
+}
+
+function handleLoadedTexture(texture){
+	gl.bindTexture(gl.TEXTURE_2D, texture);
+	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
+	texture.image);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	gl.bindTexture(gl.TEXTURE_2D, null);
 }

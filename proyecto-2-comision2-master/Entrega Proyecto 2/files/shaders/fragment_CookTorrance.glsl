@@ -21,9 +21,9 @@ struct Light{
 
 uniform Material material;
 uniform Light luz1,luz2,luz3,luz4;
+uniform sampler2D imagen;
 
-//uniform de luz
-
+in vec2 fTexCoor;
 in vec3 vNE;
 in vec3 vVE;
 
@@ -49,7 +49,7 @@ float calcularG( float dotNH,float dotNV,float dotVH,float dotNL){
     return min(1.0,min(Ge,Gs));
 }
 
-vec3 color_cook_torrance(Light luz,vec3 N,vec3 V){
+vec3 color_cook_torrance(Light luz,vec3 N,vec3 V,vec3 color){
     vec3 toReturn = vec3(0.0,0.0,0.0);
     if(length(luz.intensity) > 0.0){ //checkeo si la luz esta prendida
         vec3 vLE = vec3(0.0);
@@ -80,7 +80,7 @@ vec3 color_cook_torrance(Light luz,vec3 N,vec3 V){
                 float G = calcularG(dotHN,dotVN,dotVH,dotLN);       
                 float attenuation = 1.0/(1.0+luz.attenuation_a*dist+luz.attenuation_b*dist*dist);
 
-                toReturn =  attenuation*luz.intensity*dotLN*( material.k_diffuse/PI + material.k_spec * (F*D*G)/(PI*dotVN*dotLN));
+                toReturn =  attenuation*luz.intensity*dotLN*( color/PI + color * (F*D*G)/(PI*dotVN*dotLN));
         
             }
         }
@@ -92,20 +92,22 @@ void main(){
     vec3 N = normalize(vNE);
     vec3 V = normalize(vVE);
 
+    vec4 color = texture(imagen,fTexCoor);
+
     vec3 color1 = vec3(0.0);
     vec3 color2 = vec3(0.0);
     vec3 color3 = vec3(0.0);
     vec3 color4 = vec3(0.0);
-    vec3 color = vec3(0.0);
+    vec3 colorfinal = vec3(0.0);
    		
-    color1 = color_cook_torrance(luz1,N,V);
-    color2 = color_cook_torrance(luz2,N,V);
-    color3 = color_cook_torrance(luz3,N,V);
-    color4 = color_cook_torrance(luz4,N,V);
-    color = color1+color2+color3+color4;
+    color1 = color_cook_torrance(luz1,N,V,color.rgb);
+    color2 = color_cook_torrance(luz2,N,V,color.rgb);
+    color3 = color_cook_torrance(luz3,N,V,color.rgb);
+    color4 = color_cook_torrance(luz4,N,V,color.rgb);
+    colorfinal = color1+color2+color3+color4;
 	   
     
-    fragColor = vec4(material.k_ambient*0.3 + color,1.0); 
+    fragColor = vec4(color.rgb*0.05 + colorfinal,1.0); 
 
 }
 `
